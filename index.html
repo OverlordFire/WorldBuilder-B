@@ -1,15 +1,17 @@
 <!doctype html>
 <html lang="pt-br">
   <head>
-    
+    <meta charset="UTF-8">
     <title>WorldBuilder</title>
     <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link href="style.css" rel="stylesheet"/>
+    <link href="Css/style.css" rel="stylesheet"/>
+    <link href="Css/sections.css" rel="stylesheet"/>
+    <link href="Css/frame.css" rel="stylesheet"/>
   </head>
   <body>
     <header>
-      <nav class="Sidebar">
+      <nav class="Sidebar Expand">
         <div class="Title-Expand">
           <i class="bi bi-book"></i>
           <span class="txt">WorldBuilder</span>
@@ -35,7 +37,13 @@
             </a>
           </li>
           <li class="item-bar">
-            <a href="#D-Objects">
+            <a href="#D-Locations">
+              <span class="icon"><i class="bx bx-map"></i></span>
+              <span class="txt-link">Locations</span>
+            </a>
+          </li>
+          <li class="item-bar">
+            <a href="#E-Objects">
               <span class="icon"><i class="bi bi-box-seam"></i></span>
               <span class="txt-link">Objects</span>
             </a>
@@ -43,6 +51,12 @@
         </ul>
 
         <ul class="bottom-menu">
+          <li class="item-bar">
+            <a href="#Account">
+              <span class="icon"><i class="bi bi-person-circle"></i></span>
+              <span class="txt-link">Profile</span>
+            </a>
+          </li>
           <li class="item-bar">
             <a href="#Settings">
               <span class="icon"><i class="bi bi-gear"></i></span>
@@ -55,32 +69,105 @@
     <main>
       <div class="conteiner">
         <section id="A-Dashboard">
-          <h1>Dashboard</h1>
-          <aside class="list-panel">
-          <!-- título, pesquisa e cartões -->
-          </aside>
-
-          <div class="editor-panel">
-              <!-- conteúdo principal -->
-          </div>
+          
         </section>
         <section id="B-Stories">
-          <h1>Stories</h1>
-          <aside class="list-panel">
-          <!-- título, pesquisa e cartões -->
-          </aside>
+          <div class="section-panel">
+            <div class="section-tab">
+              <h2>Stories</h2>
+              <button class="btn-add" data-modal="Stories" title="New Story">+</button>
+            </div>
+            <div class="section-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search Story...">
+            </div>
+            <div class="section-list">
 
-          <div class="editor-panel">
-              <!-- conteúdo principal -->
+              <div class="section-card">
+                <div class="card-thumb"><i class="bi bi-feather"></i></div>
+                <div class="card-info">
+                  <span class="card-name">A Origem do Rei</span>
+                  <span class="card-desc">A ascensão de um rei lendário</span>
+
+                </div>
+              </div>
+
+            </div>
+            
+          </div>
+          <div class="section-content">
+            <p class="section-placeholder">Select an existing item or create a new one to begin.</p>
           </div>
         </section>
         <section id="C-Characters">
-          <h1>Characters</h1>
+          <div class="section-panel">
+            <div class="section-tab">
+              <h2>Characters</h2>
+              <button class="btn-add" title="New Character">+</button>
+            </div>
+            <div class="section-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search Character...">
+            </div>
+            <div class="section-list">
+            </div>
+          </div>
+          <div class="section-content">
+            <p class="section-placeholder">Select an existing item or create a new one to begin.</p>
+          </div>
         </section>
-        <section id="D-Objects">
-          <h1>Objects</h1>
+        <section id="D-Locations">
+          <div class="section-panel">
+            <div class="section-tab">
+              <h2>Locations</h2>
+              <button class="btn-add" title="New Location">+</button>
+            </div>
+            <div class="section-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search Location...">
+            </div>
+            <div class="section-list">
+              
+            </div>
+          </div>
+          <div class="section-content">
+            <p class="section-placeholder">Select an existing item or create a new one to begin.</p>
+          </div>
+        </section>
+        <section id="E-Objects">
+          <div class="section-panel">
+            <div class="section-tab">
+              <h2>Objects</h2>
+              <button class="btn-add" title="New Object">+</button>
+            </div>
+            <div class="section-search">
+              <i class="bi bi-search"></i>
+              <input type="text" placeholder="Search Object...">
+            </div>
+            <div class="section-list">
+              
+            </div>
+          </div>
+          <div class="section-content">
+            <p class="section-placeholder">Select an existing item or create a new one to begin.</p>
+          </div>
         </section>
 
+        <section id="Account">
+          <div class="account-wrapper">
+
+            <!-- Header do perfil -->
+            <div class="account-header">
+              <div class="account-avatar">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <div class="account-header-info">
+                <span class="account-name">Username</span>
+                <span class="account-email">user@email.com</span>
+              </div>
+            </div>
+          </div>
+        </section>
         <section id="Settings">
           <h1>Settings</h1>
         </section>
@@ -89,6 +176,94 @@
     <footer>
 
     </footer>
-    <script src="navbar_script.js"></script>
+        <!-- Modal: criar novo item -->
+    <div id="create-modal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 class="modal-title">New Item</h3>
+        <div class="modal-group">
+          <label>Name</label>
+          <input type="text" id="modal-name-input" placeholder="Enter a name...">
+        </div>
+        <div class="modal-actions">
+          <button id="modal-cancel" class="modal-btn-cancel">Cancel</button>
+          <button id="modal-confirm" class="modal-btn-confirm">Create</button>
+        </div>
+      </div>
+    </div>
+      <!-- Modal: Login -->
+    <div id="login-modal" class="modal-overlay open">
+      <form class="modal-box">
+        <button type="button" id="login-close" class="modal-btn-x" aria-label="close">&times;</button>
+        <div class="modal-login-header">
+          <i class="bi bi-book modal-login-icon"></i>
+          <h3 class="modal-title">WorldBuilder</h3>
+        </div>
+        <div class="modal-group">
+          <label>E-mail</label>
+          <div class="input-wrap">
+            <input type="email" id="login-email" placeholder="Your@email.com">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input type="password" id="login-password" placeholder="Your password..">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+        </div>
+        <p id="login-error" class="modal-error"></p>
+        <div class="modal-actions">
+          <button id="login-confirm" class="modal-btn-confirm modal-btn-full">Sign In</button>
+        </div>
+        <hr class="modal-divider">
+        <p class="modal-footer-link">Don't have an account? <a id="go-to-register">Sign Up</a></p>
+      </form>
+    </div>
+      <!-- Modal: Cadastro -->
+    <div id="register-modal" class="modal-overlay">
+      <form class="modal-box">
+        <button type="button" id="login-close" class="modal-btn-x" aria-label="close">&times;</button>
+        <h3 class="modal-title">Create Account</h3>
+        <div class="modal-group">
+          <label>Username</label>
+          <div class="input-wrap">
+            <input type="text" id="register-username" placeholder="Choose a username...">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>E-mail</label>
+          <div class="input-wrap">
+            <input type="email" id="register-email" placeholder="your@email.com">
+            <i class="bi bi-envelope-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input type="password" id="register-password" placeholder="Create a password...">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Confirm Password</label>
+          <div class="input-wrap">
+            <input type="password" id="register-confirm-password" placeholder="Repeat your password...">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+        </div>
+        <p id="register-error" class="modal-error"></p>
+        <hr class="modal-divider">
+        <div class="modal-actions">
+          <button id="register-confirm" class="modal-btn-confirm modal-btn-full">Sign Up</button>
+        </div>
+        <p class="modal-footer-link">Already have an account? <a id="go-to-login">Sign In</a></p>
+      </form>
+    </div>
+    
+    <script src="Js/navbar_script.js"></script>
+    <script src="Js/sections_script.js"></script>
+    <script src="Js/auth_script.js"></script>
   </body>
 </html>

@@ -1,0 +1,83 @@
+    <!-- Modal: criar novo item -->
+    <div id="create-modal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 class="modal-title">New Item</h3>
+        <div class="modal-group">
+          <label>Name</label>
+          <input type="text" id="modal-name-input" placeholder="Enter a name...">
+        </div>
+        <div class="modal-actions">
+          <button id="modal-cancel" class="modal-btn-cancel">Cancel</button>
+          <button id="modal-confirm" class="modal-btn-confirm">Create</button>
+        </div>
+      </div>
+    </div>
+      <!-- Modal: Login -->
+    <div id="login-modal" class="modal-overlay open">
+      <form class="modal-box">
+        <div class="modal-login-header">
+          <i class="bi bi-book modal-login-icon"></i>
+          <h3 class="modal-title">WorldBuilder</h3>
+        </div>
+        <div class="modal-group">
+          <label>E-mail</label>
+          <div class="input-wrap">
+            <input type="email" id="login-email" placeholder="Your@email.com">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input type="password" id="login-password" placeholder="Your password..">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+        </div>
+        <p id="login-error" class="modal-error"></p>
+        <div class="modal-actions">
+          <button id="login-confirm" class="modal-btn-confirm modal-btn-full">Sign In</button>
+        </div>
+        <hr class="modal-divider">
+        <p class="modal-footer-link">Don't have an account? <a id="go-to-register">Sign Up</a></p>
+      </form>
+    </div>
+      <!-- Modal: Cadastro -->
+    <div id="register-modal" class="modal-overlay">
+      <form class="modal-box">
+        <h3 class="modal-title">Create Account</h3>
+        <div class="modal-group">
+          <label>Username</label>
+          <div class="input-wrap">
+            <input type="text" id="register-username" placeholder="Choose a username...">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>E-mail</label>
+          <div class="input-wrap">
+            <input type="email" id="register-email" placeholder="your@email.com">
+            <i class="bi bi-envelope-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input type="password" id="register-password" placeholder="Create a password...">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+        </div>
+        <div class="modal-group">
+          <label>Confirm Password</label>
+          <div class="input-wrap">
+            <input type="password" id="register-confirm-password" placeholder="Repeat your password...">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+        </div>
+        <p id="register-error" class="modal-error"></p>
+        <hr class="modal-divider">
+        <div class="modal-actions">
+          <button id="register-confirm" class="modal-btn-confirm modal-btn-full">Sign Up</button>
+        </div>
+        <p class="modal-footer-link">Already have an account? <a id="go-to-login">Sign In</a></p>
+      </form>
+    </div>
