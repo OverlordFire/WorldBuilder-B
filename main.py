@@ -51,7 +51,7 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
-        if not data or not data.get("email") or not data.get("password")
+        if not data or not data.get("email") or not data.get("password"):
         return jsonify({"success": False, "message": "E-mail e senha são obrigatórios"})
     conn = get_db()
     try:
