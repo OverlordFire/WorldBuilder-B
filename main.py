@@ -10,11 +10,22 @@ CORS(app)
 DB = "WB_Sql.db"
 
 print("Banco:", os.path.abspath(DB))
+
 def get_db():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     return conn
 
+def init_db():
+    conn = get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS Users (
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT    NOT NULL UNIQUE,
+            email    TEXT    NOT NULL UNIQUE,
+            password TEXT    NOT NULL
+        )
+    """)
     for table in ["Stories", "Characters", "Locations", "Objects"]:
         conn.execute(f"""
             CREATE TABLE IF NOT EXISTS {table} (
@@ -51,7 +62,7 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
-        if not data or not data.get("email") or not data.get("password")
+    if not data or not data.get("email") or not data.get("password"):
         return jsonify({"success": False, "message": "E-mail e senha são obrigatórios"})
     conn = get_db()
     try:
@@ -60,14 +71,34 @@ def login():
             (data["email"],)
         ).fetchone()
         print("Usuário salvo!")
-        return jsonify({
+        if user and check_password_hash(user["password"], data["password"]):
+            return jsonify({
                 "success": True,
                 "user_id": user["id"],
                 "username": user["username"],
                 "email": user["email"]
             })
-
         return jsonify({"success": False, "message": "E-mail ou senha inválidos"})
+    finally:
+        conn.close()
+
+@app.route("/get-items", methods=["GET"])
+def get_items():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "error": "Not logged in"})
+    conn = get_db()
+    try:
+        result = {}
+        for table in ["Stories", "Characters", "Locations", "Objects"]:
+            rows = conn.execute(
+                f"SELECT id, name FROM {table} WHERE user_id = ? ORDER BY id ASC",
+                (user_id,)
+            ).fetchall()
+            result[table] = [{"id": row["id"], "name": row["name"]} for row in rows]
+        return jsonify({"success": True, "items": result})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
     finally:
         conn.close()
 

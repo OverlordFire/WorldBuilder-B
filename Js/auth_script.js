@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedSession = loadSession();
   if (savedSession) {
     applySession(savedSession, loginModal);
+    if (window.loadUserItems) window.loadUserItems(savedSession.userId);
   }
 
   function openModal(modal) {
@@ -82,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/login", {
+      const res  = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -90,9 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.success) {
-        closeModal(loginModal);
         saveSession(data.user_id, data.username, data.email, remember);
         applySession({ userId: data.user_id, username: data.username, email: data.email }, loginModal);
+        if (window.loadUserItems) window.loadUserItems(data.user_id);
       } else {
         errorEl.innerText = data.message || "Failed to sign in.";
       }
@@ -124,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/register", {
+      const res  = await fetch("/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })

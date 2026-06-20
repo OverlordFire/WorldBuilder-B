@@ -1,4 +1,22 @@
 let activeSection = null;
+// ===== CARREGAR ITENS DO BANCO =====
+async function loadUserItems(userId) {
+  try {
+    const res  = await fetch(`/get-items?user_id=${userId}`);
+    const data = await res.json();
+    if (!data.success) return;
+
+    for (const [section, items] of Object.entries(data.items)) {
+      for (const item of items) {
+        addCardToList(section, item.id, item.name);
+      }
+    }
+  } catch (e) {
+    console.error("Erro ao carregar itens:", e);
+  }
+}
+
+window.loadUserItems = loadUserItems;
 
 const sectionIcons = {
   Stories:    "bi-feather",
@@ -45,7 +63,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    const res  = await fetch('https://worldbuilder-b.onrender.com/create-item', {
+    const res  = await fetch('/create-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section: activeSection, name, user_id: userId })
