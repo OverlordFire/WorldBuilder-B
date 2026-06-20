@@ -1,9 +1,49 @@
 window.currentUserId = null;
 
+const SESSION_KEY = "wb_session";
+const REMEMBER_DAYS = 30;
+function saveSession(userId, username, email, remember) {
+  const expiry = remember
+    ? Date.now() + REMEMBER_DAYS * 24 * 60 * 60 * 1000
+    : null;
+  const session = { userId, username, email, expiry };
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    if (session.expiry && Date.now() > session.expiry) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch {
+    localStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+}
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+function applySession(session, loginModal) {
+  window.currentUserId = session.userId;
+  const nameEl  = document.querySelector(".account-name");
+  const emailEl = document.querySelector(".account-email");
+  if (nameEl)  nameEl.innerText  = session.username;
+  if (emailEl) emailEl.innerText = session.email;
+  if (loginModal) loginModal.classList.remove("open");
+}
 document.addEventListener("DOMContentLoaded", () => {
 
   const loginModal    = document.getElementById("login-modal");
   const registerModal = document.getElementById("register-modal");
+
+  const savedSession = loadSession();
+  if (savedSession) {
+    applySession(savedSession, loginModal);
+  }
 
   function openModal(modal) {
     modal.classList.add("open");
@@ -30,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const email    = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
+    const remember = document.getElementById("login-remember").checked;
     const errorEl  = document.getElementById("login-error");
 
     errorEl.innerText = "";
@@ -41,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/login", {
+      const res  = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -50,9 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.success) {
         closeModal(loginModal);
-        document.querySelector(".account-name").innerText  = data.username;
-        document.querySelector(".account-email").innerText = email;
-        window.currentUserId = data.user_id;
+        saveSession(data.user_id, data.username, data.email, remember);
+        applySession({ userId: data.user_id, username: data.username, email: data.email }, loginModal);
       } else {
         errorEl.innerText = data.message || "Failed to sign in.";
       }
@@ -84,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/register", {
+      const res  = await fetch("/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })

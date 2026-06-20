@@ -18,6 +18,7 @@ document.querySelectorAll('.modal-btn-cancel').forEach(button => {
   button.addEventListener('click', () => {
     document.getElementById('create-modal').classList.remove('open');
     document.getElementById('modal-name-input').value = '';
+    document.getElementById('modal-name-input').autocomplete="off";
   });
 });
 
@@ -37,7 +38,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    const res  = await fetch('https://worldbuilder-b.onrender.com/create-item', {
+    const res  = await fetch('/create-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section: activeSection, name, user_id: userId })

@@ -79,7 +79,7 @@
             </div>
             <div class="section-search">
               <i class="bi bi-search"></i>
-              <input type="text" placeholder="Search Story...">
+              <input type="text" placeholder="Search Story..." autocomplete="off">
             </div>
             <div class="divider"></div>
             <div class="section-list">
@@ -217,6 +217,12 @@
           </div>
         </div>
         <p id="login-error" class="modal-error"></p>
+        <div class="modal-remember">
+          <label class="remember-label">
+            <input type="checkbox" id="login-remember">
+            <span>Remember me for 30 days</span>
+          </label>
+        </div>
         <div class="modal-actions">
           <button id="login-confirm" class="modal-btn-confirm modal-btn-full">Sign In</button>
         </div>

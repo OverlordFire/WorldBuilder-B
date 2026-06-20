@@ -15,16 +15,6 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-def init_db():
-    conn = get_db()
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS Users (
-            id       INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT    NOT NULL UNIQUE,
-            email    TEXT    NOT NULL UNIQUE,
-            password TEXT    NOT NULL
-        )
-    """)
     for table in ["Stories", "Characters", "Locations", "Objects"]:
         conn.execute(f"""
             CREATE TABLE IF NOT EXISTS {table} (
@@ -61,14 +51,21 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
+        if not data or not data.get("email") or not data.get("password")
+        return jsonify({"success": False, "message": "E-mail e senha são obrigatórios"})
     conn = get_db()
     try:
         user = conn.execute(
             "SELECT * FROM Users WHERE email = ?",
             (data["email"],)
         ).fetchone()
-
-        return jsonify({"success": True, "username": user["username"], "user_id": user["id"]})
+        print("Usuário salvo!")
+        return jsonify({
+                "success": True,
+                "user_id": user["id"],
+                "username": user["username"],
+                "email": user["email"]
+            })
 
         return jsonify({"success": False, "message": "E-mail ou senha inválidos"})
     finally:
@@ -88,7 +85,6 @@ def create_item():
         return jsonify({"success": False, "error": "Name is required"})
     if not user_id:
         return jsonify({"success": False, "error": "Not logged in"})
-
     conn = get_db()
     try:
         cursor = conn.execute(
@@ -101,6 +97,7 @@ def create_item():
         return jsonify({"success": False, "error": str(e)})
     finally:
         conn.close()
+
 
 if __name__ == "__main__":
     init_db()
