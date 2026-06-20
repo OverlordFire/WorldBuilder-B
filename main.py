@@ -25,6 +25,15 @@ def init_db():
             password TEXT    NOT NULL
         )
     """)
+    for table in ["Stories", "Characters", "Locations", "Objects"]:
+        conn.execute(f"""
+            CREATE TABLE IF NOT EXISTS {table} (
+                id      INTEGER PRIMARY KEY AUTOINCREMENT,
+                name    TEXT    NOT NULL,
+                user_id INTEGER NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES Users(id)
+            )
+        """)
     conn.commit()
     conn.close()
 
@@ -59,11 +68,37 @@ def login():
             (data["email"],)
         ).fetchone()
 
-        if user and check_password_hash(user["password"], data["password"]):
-            print("Usuário salvo!")
-            return jsonify({"success": True, "username": user["username"]})
+        return jsonify({"success": True, "username": user["username"], "user_id": user["id"]})
 
         return jsonify({"success": False, "message": "E-mail ou senha inválidos"})
+    finally:
+        conn.close()
+
+@app.route("/create-item", methods=["POST"])
+def create_item():
+    data = request.json
+    section  = data.get("section", "")
+    name     = data.get("name", "").strip()
+    user_id  = data.get("user_id")
+
+    allowed = ["Stories", "Characters", "Locations", "Objects"]
+    if section not in allowed:
+        return jsonify({"success": False, "error": "Invalid section"})
+    if not name:
+        return jsonify({"success": False, "error": "Name is required"})
+    if not user_id:
+        return jsonify({"success": False, "error": "Not logged in"})
+
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            f"INSERT INTO {section} (name, user_id) VALUES (?, ?)",
+            (name, user_id)
+        )
+        conn.commit()
+        return jsonify({"success": True, "id": cursor.lastrowid, "name": name})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
     finally:
         conn.close()
 

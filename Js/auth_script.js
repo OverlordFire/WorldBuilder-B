@@ -1,3 +1,5 @@
+window.currentUserId = null;
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const loginModal    = document.getElementById("login-modal");
@@ -33,18 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
     errorEl.innerText = "";
 
     if (!email || !password) {
-      errorEl.innerText = "Preencha todos os campos.";
+      errorEl.innerText = "Please fill in all fields.";
       return;
     }
 
     try {
       console.log("Enviando...");
-      const res = await fetch("https://worldbuilder-b.onrender.com/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
+      const res  = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
       });
       const data = await res.json();
 
@@ -52,11 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
         closeModal(loginModal);
         document.querySelector(".account-name").innerText  = data.username;
         document.querySelector(".account-email").innerText = email;
+        window.currentUserId = data.user_id;
       } else {
-        errorEl.innerText = data.message || "Erro ao entrar.";
+        errorEl.innerText = data.message || "Failed to sign in.";
       }
     } catch {
-      errorEl.innerText = "Não foi possível conectar ao servidor.";
+      errorEl.innerText = "Unable to connect to the server.";
     }
   });
 
@@ -72,23 +73,21 @@ document.addEventListener("DOMContentLoaded", () => {
     errorEl.innerText = "";
 
     if (!username || !email || !password || !confirm) {
-      errorEl.innerText = "Preencha todos os campos.";
+      errorEl.innerText = "Please fill in all fields.";
       return;
     }
 
     if (password !== confirm) {
-      errorEl.innerText = "As senhas não coincidem.";
+      errorEl.innerText = "Passwords do not match.";
       return;
     }
 
     try {
       console.log("Enviando...");
-      const res = await fetch("https://worldbuilder-b.onrender.com/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, email, password })
+      const res  = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
       });
       const data = await res.json();
 
@@ -99,13 +98,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("login-error").innerText = "";
       } else {
         if (data.error && data.error.includes("UNIQUE")) {
-          errorEl.innerText = "E-mail ou username já cadastrado.";
+          errorEl.innerText = "Email or username already exists.";
         } else {
-          errorEl.innerText = data.error || "Erro ao criar conta.";
+          errorEl.innerText = data.error || "Failed to create account.";
         }
       }
     } catch {
-      errorEl.innerText = "Não foi possível conectar ao servidor.";
+      errorEl.innerText = "Unable to connect to the server.";
     }
   });
 
