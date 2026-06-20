@@ -180,6 +180,64 @@ section:target {
     font-size: 18px;
     color: #b09060;
 }
+/* ===== ITEM VIEW (section-content ao clicar) ===== */
+.item-view {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    padding: 40px 48px;
+    gap: 32px;
+}
+.item-view-header {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+}
+.item-view-thumb {
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
+    background: #f0e8d0;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cf8217;
+    font-size: 42px;
+    border: 2px solid #e8dfc8;
+}
+.item-view-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.item-view-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #2a1f0e;
+    line-height: 1.1;
+}
+.item-view-edit-btn {
+    background: none;
+    border: none;
+    color: #cf8217;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+.item-view-edit-btn:hover {
+    background: #cf821720;
+    color: #b37428;
+}
 /* ===== CARD ACTIVE ===== */
 .section-card.active {
     border-color: #cf8217;

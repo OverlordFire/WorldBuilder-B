@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/login", {
+      const res  = await fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com/register", {
+      const res  = await fetch("/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })

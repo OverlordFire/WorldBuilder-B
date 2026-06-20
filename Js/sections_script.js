@@ -7,21 +7,28 @@ const sectionIcons = {
   Objects:    "bi-box-fill"
 };
 
+const sectionMap = {
+  Stories:    "B-Stories",
+  Characters: "C-Characters",
+  Locations:  "D-Locations",
+  Objects:    "E-Objects"
+};
+// ===== OPEN MODAL =====
 document.querySelectorAll('.btn-add').forEach(button => {
   button.addEventListener('click', () => {
     activeSection = button.dataset.section;
     document.getElementById('create-modal').classList.add('open');
   });
 });
-
+// ===== CANCEL MODAL =====
 document.querySelectorAll('.modal-btn-cancel').forEach(button => {
   button.addEventListener('click', () => {
     document.getElementById('create-modal').classList.remove('open');
     document.getElementById('modal-name-input').value = '';
-    document.getElementById('modal-name-input').autocomplete="off";
+    document.getElementById('modal-name-input').style.borderColor = '';
   });
 });
-
+// ===== CONFIRM MODAL (salvar no banco) =====
 document.getElementById('modal-confirm').addEventListener('click', async () => {
   const name    = document.getElementById('modal-name-input').value.trim();
   const userId  = window.currentUserId;
@@ -38,7 +45,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    const res  = await fetch('https://worldbuilder-b.onrender.com/create-item', {
+    const res  = await fetch('/create-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section: activeSection, name, user_id: userId })
@@ -58,13 +65,40 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 });
 
+// ===== CLIQUE NO CARD =====
+function attachCardClick(card, section) {
+  card.addEventListener('click', () => {
+    const sectionId = sectionMap[section];
+    const sectionEl = sectionId
+      ? document.getElementById(sectionId)
+      : card.closest('section');
+
+    // Remove active de todos os cards da seção
+    sectionEl.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+
+    const name      = card.querySelector('.card-name').innerText;
+    const thumbIcon = card.querySelector('.card-thumb i').className;
+    const content   = sectionEl.querySelector('.section-content');
+
+    content.innerHTML = `
+      <div class="item-view">
+        <div class="item-view-header">
+          <div class="item-view-thumb"><i class="${thumbIcon}"></i></div>
+          <div class="item-view-name-wrap">
+            <span class="item-view-name">${name}</span>
+            <button class="item-view-edit-btn" title="Edit name">
+              <i class="bi bi-pencil"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// ===== ADICIONAR CARD NA LISTA =====
 function addCardToList(section, id, name) {
-  const sectionMap = {
-    Stories:    'B-Stories',
-    Characters: 'C-Characters',
-    Locations:  'D-Locations',
-    Objects:    'E-Objects'
-  };
 
   const sectionEl = document.getElementById(sectionMap[section]);
   if (!sectionEl) return;
@@ -84,4 +118,14 @@ function addCardToList(section, id, name) {
     </div>
   `;
   list.appendChild(card);
+  attachCardClick(card, section);
 }
+
+// ===== ATIVAR CLIQUE NOS CARDS JÁ EXISTENTES NO HTML =====
+document.querySelectorAll('section').forEach(sectionEl => {
+  const sectionId = sectionEl.id;
+  const section   = Object.keys(sectionMap).find(k => sectionMap[k] === sectionId);
+  sectionEl.querySelectorAll('.section-card').forEach(card => {
+    attachCardClick(card, section);
+  });
+});
