@@ -37,7 +37,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    const res  = await fetch('/create-item', {
+    const res  = await fetch('https://worldbuilder-b.onrender.com/create-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section: activeSection, name, user_id: userId })
