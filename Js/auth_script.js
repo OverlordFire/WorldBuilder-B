@@ -39,10 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      const res = await fetch("https://worldbuilder-b.onrender.com/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
       });
       const data = await res.json();
 
@@ -81,10 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log("Enviando...");
-      const res  = await fetch("https://worldbuilder-b.onrender.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password })
+      const res = await fetch("https://worldbuilder-b.onrender.com/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, email, password })
       });
       const data = await res.json();
 
