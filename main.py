@@ -35,6 +35,11 @@ def init_db():
                 FOREIGN KEY (user_id) REFERENCES Users(id)
             )
         """)
+    for col, default in [("story_role", ""), ("character_class", "")]:
+        try:
+            conn.execute(f"ALTER TABLE Characters ADD COLUMN {col} TEXT DEFAULT ''")
+        except Exception:
+            pass
     conn.commit()
     conn.close()
 
@@ -128,7 +133,75 @@ def create_item():
         return jsonify({"success": False, "error": str(e)})
     finally:
         conn.close()
+@app.route("/get-item", methods=["GET"])
+def get_item():
+    section = request.args.get("section", "")
+    item_id = request.args.get("id")
+    user_id = request.args.get("user_id")
+    allowed = ["Stories", "Characters", "Locations", "Objects"]
+    if section not in allowed or not item_id or not user_id:
+        return jsonify({"success": False, "error": "Invalid request"})
+    conn = get_db()
+    try:
+        row = conn.execute(
+            f"SELECT * FROM {section} WHERE id = ? AND user_id = ?",
+            (item_id, user_id)
+        ).fetchone()
+        if not row:
+            return jsonify({"success": False, "error": "Not found"})
+        item = dict(row)
+        return jsonify({"success": True, "item": item})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+    finally:
+        conn.close()
 
+@app.route("/update-character", methods=["PUT"])
+def update_character():
+    data = request.json
+    item_id        = data.get("id")
+    user_id        = data.get("user_id")
+    story_role     = data.get("story_role", "")
+    character_class = data.get("character_class", "")
+    if not item_id or not user_id:
+        return jsonify({"success": False, "error": "Missing data"})
+    conn = get_db()
+    try:
+        conn.execute(
+            "UPDATE Characters SET story_role = ?, character_class = ? WHERE id = ? AND user_id = ?",
+            (story_role, character_class, item_id, user_id)
+        )
+        conn.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+    finally:
+        conn.close()
+        
+@app.route("/delete-item", methods=["DELETE"])
+def delete_item():
+    data = request.json
+    section = data.get("section", "")
+    item_id = data.get("id")
+    user_id = data.get("user_id")
+
+    allowed = ["Stories", "Characters", "Locations", "Objects"]
+    if section not in allowed:
+        return jsonify({"success": False, "error": "Invalid section"})
+    if not item_id or not user_id:
+        return jsonify({"success": False, "error": "Missing data"})
+    conn = get_db()
+    try:
+        conn.execute(
+            f"DELETE FROM {section} WHERE id = ? AND user_id = ?",
+            (item_id, user_id)
+        )
+        conn.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     init_db()
