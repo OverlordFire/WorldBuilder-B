@@ -30,7 +30,7 @@ async function openCharacterView(view, itemId, userId) {
 
   let story_role = "", character_class = "",class_custom = "", race = "", race_custom = "", gender = "N/A", description = "";
   try {
-    const res  = await fetch(`/get-item?section=Characters&id=${itemId}&user_id=${userId}`);
+    const res  = await fetch(`https://worldbuilder-b.onrender.com/get-item?section=Characters&id=${itemId}&user_id=${userId}`);
     const data = await res.json();
     if (data.success) {
       story_role  = data.item.story_role  || "";
