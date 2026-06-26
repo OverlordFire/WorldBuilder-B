@@ -169,7 +169,7 @@ async function openCharacterView(view, itemId, userId) {
     statusEl.textContent = "Salvando...";
     statusEl.className   = "char-save-status";
     try {
-      const res  = await fetch("/update-character", {
+      const res  = await fetch("https://worldbuilder-b.onrender.com/update-character", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
