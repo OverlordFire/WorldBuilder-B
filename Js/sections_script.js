@@ -210,7 +210,7 @@ async function deleteItem(section, id, card) {
   if (!userId) return;
 
   try {
-    const res  = await fetch("/delete-item", {
+    const res  = await fetch("https://worldbuilder-b.onrender.com/delete-item", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ section, id, user_id: userId })
@@ -248,7 +248,7 @@ function addCardToList(section, id, name) {
 // ===== CARREGAR ITENS DO BANCO =====
 async function loadUserItems(userId) {
   try {
-    const res  = await fetch(`/get-items?user_id=${userId}`);
+    const res  = await fetch(`https://worldbuilder-b.onrender.com/get-items?user_id=${userId}`);
     const data = await res.json();
     if (!data.success) return;
 
@@ -296,7 +296,7 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   }
 
   try {
-    const res  = await fetch('/create-item', {
+    const res  = await fetch('https://worldbuilder-b.onrender.com/create-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section: activeSection, name, user_id: userId })
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renameConfirmBtn.disabled = true;
     try {
-      const res  = await fetch("/rename-item", {
+      const res  = await fetch("https://worldbuilder-b.onrender.com/rename-item", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ section: renameCtx.section, id: Number(renameCtx.id), user_id: userId, name: newName })
