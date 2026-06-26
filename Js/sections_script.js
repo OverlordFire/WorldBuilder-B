@@ -6,7 +6,12 @@ const sectionIcons = {
   Locations:  "bi-geo-alt-fill",
   Objects:    "bi-box-fill"
 };
-
+const sectionThumbClass = {
+  Stories:    "thumb-stories",
+  Characters: "thumb-characters",
+  Locations:  "thumb-locations",
+  Objects:    "thumb-objects"
+};
 const sectionMap = {
   Stories:    "B-Stories",
   Characters: "C-Characters",
@@ -139,8 +144,9 @@ function buildCard(section, id, name) {
   const card = document.createElement("div");
   card.className = "section-card";
   card.dataset.id = id;
-  card.innerHTML = `
-    <div class="card-thumb"><i class="bi ${icon}"></i></div>
+  const thumbClass = sectionThumbClass[section] || "";
+ card.innerHTML = `
+    <div class="card-thumb ${thumbClass}"><i class="bi ${icon}"></i></div>
     <div class="card-info">
       <span class="card-name">${name}</span>
     </div>
@@ -158,24 +164,6 @@ function buildCard(section, id, name) {
 
   return card;
 }
-// ===== DADOS DOS SELECTS DE PERSONAGEM =====
-const STORY_ROLES = [
-  "Protagonista", "Co-protagonista", "Antagonista", "Secundário",
-  "Mentor", "Rival", "Aliado", "Figurante"
-];
-const CHAR_CLASSES = [
-  "Herói", "Vilão", "Guerreiro", "Mago", "Arqueiro", "Cavaleiro",
-  "Ferreiro", "Alquimista", "Sacerdote", "Mercador", "Assassino",
-  "Caçador", "Bárbaro", "Monge", "Bardo", "Druida", "Invocador",
-  "Necromante", "Curandeiro", "Cientista", "Inventor", "Fazendeiro"
-];
-
-function buildSelectOptions(values, selected) {
-  const blank = `<option value="">— Selecionar —</option>`;
-  return blank + values.map(v =>
-    `<option value="${v}"${v === selected ? " selected" : ""}>${v}</option>`
-  ).join("");
-}
 // ===== ABRIR ITEM VIEW =====
 async function openItemView(section, card, name, icon) {
   const sectionEl = document.getElementById(sectionMap[section]);
@@ -186,11 +174,16 @@ async function openItemView(section, card, name, icon) {
 
   const content = sectionEl.querySelector(".section-content");
   const itemId  = card.dataset.id;
-
+  const thumbCls = sectionThumbClass[section] || "";
+const sectionSingularMap = { Stories: "Story", Characters: "Character", Locations: "Location", Objects: "Object" };
+  const categoryTitle = section !== "Stories"
+    ? `<div class="item-category-title">Edit ${sectionSingularMap[section] || section}</div>`
+    : "";
   content.innerHTML = `
     <div class="item-view">
+      ${categoryTitle}
       <div class="item-view-header">
-        <div class="item-view-thumb"><i class="bi ${icon}"></i></div>
+        <div class="item-view-thumb ${thumbCls}"><i class="bi ${icon}"></i></div>
         <div class="item-view-name-wrap">
           <span class="item-view-name">${name}</span>
           <button class="item-view-edit-btn" title="Edit name">
@@ -200,82 +193,16 @@ async function openItemView(section, card, name, icon) {
       </div>
     </div>
   `;
-
-  if (section !== "Characters") return;
-
-  const userId = window.currentUserId;
-  if (!userId) return;
-
-  let story_role = "", character_class = "";
-  try {
-    const res  = await fetch(`/get-item?section=Characters&id=${itemId}&user_id=${userId}`);
-    const data = await res.json();
-    if (data.success) {
-      story_role      = data.item.story_role      || "";
-      character_class = data.item.character_class || "";
-    }
-  } catch { /* silently skip */ }
-
-  const view = content.querySelector(".item-view");
-  const attrsEl = document.createElement("div");
-  attrsEl.className = "char-attrs";
-  attrsEl.innerHTML = `
-    <div>
-      <div class="char-attrs-title">Atributos do Personagem</div>
-      <div class="char-attrs-grid">
-        <div class="char-attr-field">
-          <label>Papel na História</label>
-          <select class="char-attr-select" id="attr-story-role">
-            ${buildSelectOptions(STORY_ROLES, story_role)}
-          </select>
-        </div>
-        <div class="char-attr-field">
-          <label>Classe</label>
-          <select class="char-attr-select" id="attr-class">
-            ${buildSelectOptions(CHAR_CLASSES, character_class)}
-          </select>
-        </div>
-      </div>
-    </div>
-    <span class="char-save-status" id="char-save-status"></span>
-  `;
-  view.appendChild(attrsEl);
-
-  const roleEl   = attrsEl.querySelector("#attr-story-role");
-  const classEl  = attrsEl.querySelector("#attr-class");
-  const statusEl = attrsEl.querySelector("#char-save-status");
-
-  async function saveAttrs() {
-    statusEl.textContent = "Salvando...";
-    statusEl.className   = "char-save-status";
-    try {
-      const res  = await fetch("/update-character", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: Number(itemId),
-          user_id: userId,
-          story_role: roleEl.value,
-          character_class: classEl.value
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        statusEl.textContent = "✓ Salvo";
-        statusEl.className   = "char-save-status saved";
-        setTimeout(() => { statusEl.textContent = ""; }, 2000);
-      } else {
-        statusEl.textContent = "Erro ao salvar";
-        statusEl.className   = "char-save-status error";
-      }
-    } catch {
-      statusEl.textContent = "Sem conexão";
-      statusEl.className   = "char-save-status error";
-    }
+  const editBtn = content.querySelector(".item-view-edit-btn");
+  if (editBtn) {
+    editBtn.addEventListener("click", () => {
+      const currentName = content.querySelector(".item-view-name")?.textContent || name;
+      if (window.openRenameModal) window.openRenameModal(section, itemId, card, currentName);
+    });
   }
-
-  roleEl.addEventListener("change",  saveAttrs);
-  classEl.addEventListener("change", saveAttrs);
+  const view = content.querySelector(".item-view");
+  if (section === "Characters") await openCharacterView(view, itemId, window.currentUserId);
+  if (section === "Objects")    await openObjectView(view, itemId, window.currentUserId);
 }
 // ===== DELETAR ITEM =====
 async function deleteItem(section, id, card) {
@@ -387,4 +314,75 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
   } catch {
     alert("Unable to connect to the server.");
   }
+});
+// ===== RENAME MODAL =====
+let renameCtx = { section: null, id: null, card: null };
+
+document.addEventListener("DOMContentLoaded", () => {
+  const renameModal   = document.getElementById("rename-modal");
+  const renameInput   = document.getElementById("rename-input");
+  const renameError   = document.getElementById("rename-error");
+  const renameCancelBtn  = document.getElementById("rename-cancel");
+  const renameConfirmBtn = document.getElementById("rename-confirm");
+
+  window.openRenameModal = function(section, id, card, currentName) {
+    renameCtx = { section, id, card };
+    renameInput.value = currentName;
+    renameError.textContent = "";
+    renameInput.style.borderColor = "";
+    renameModal.classList.add("open");
+    setTimeout(() => renameInput.focus(), 80);
+  };
+
+  renameCancelBtn.addEventListener("click", () => {
+    renameModal.classList.remove("open");
+  });
+
+  renameModal.addEventListener("click", (e) => {
+    if (e.target === renameModal) renameModal.classList.remove("open");
+  });
+
+  renameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") renameConfirmBtn.click();
+    if (e.key === "Escape") renameModal.classList.remove("open");
+  });
+
+  renameConfirmBtn.addEventListener("click", async () => {
+    const newName = renameInput.value.trim();
+    if (!newName) {
+      renameInput.style.borderColor = "red";
+      renameError.textContent = "O nome não pode estar vazio.";
+      return;
+    }
+    const userId = window.currentUserId;
+    if (!userId) return;
+
+    renameConfirmBtn.disabled = true;
+    try {
+      const res  = await fetch("/rename-item", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ section: renameCtx.section, id: Number(renameCtx.id), user_id: userId, name: newName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const { section, id, card } = renameCtx;
+        const item = sectionItems[section]?.find(i => i.id === Number(id));
+        if (item) item.name = newName;
+        if (card) {
+          const nameSpan = card.querySelector(".card-name");
+          if (nameSpan) nameSpan.textContent = newName;
+        }
+        const viewName = document.querySelector(".item-view-name");
+        if (viewName) viewName.textContent = newName;
+        renameModal.classList.remove("open");
+      } else {
+        renameError.textContent = data.error || "Erro ao salvar.";
+      }
+    } catch {
+      renameError.textContent = "Sem conexão com o servidor.";
+    } finally {
+      renameConfirmBtn.disabled = false;
+    }
+  });
 });

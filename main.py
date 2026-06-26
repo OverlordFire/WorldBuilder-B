@@ -35,9 +35,14 @@ def init_db():
                 FOREIGN KEY (user_id) REFERENCES Users(id)
             )
         """)
-    for col, default in [("story_role", ""), ("character_class", "")]:
+    for col in ["description", "obj_type", "element", "rarity", "status"]:
         try:
-            conn.execute(f"ALTER TABLE Characters ADD COLUMN {col} TEXT DEFAULT ''")
+            conn.execute(f"ALTER TABLE Objects ADD COLUMN {col} TEXT DEFAULT ''")
+        except Exception:
+            pass
+    for col, default in [("story_role", ""), ("character_class", ""), ("age", ""), ("race", ""), ("gender", "N/A"), ("description", "")]:
+        try:
+            conn.execute(f"ALTER TABLE Characters ADD COLUMN {col} TEXT DEFAULT '{default}'")
         except Exception:
             pass
     conn.commit()
@@ -163,13 +168,16 @@ def update_character():
     user_id        = data.get("user_id")
     story_role     = data.get("story_role", "")
     character_class = data.get("character_class", "")
+    gender         = data.get("gender", "")
+    race           = data.get("race", "")
+    description    = data.get("description", "")
     if not item_id or not user_id:
         return jsonify({"success": False, "error": "Missing data"})
     conn = get_db()
     try:
         conn.execute(
-            "UPDATE Characters SET story_role = ?, character_class = ? WHERE id = ? AND user_id = ?",
-            (story_role, character_class, item_id, user_id)
+            "UPDATE Characters SET story_role = ?, character_class = ?, gender = ?, race = ?, description = ? WHERE id = ? AND user_id = ?",
+            (story_role, character_class, gender, race, description, item_id, user_id)
         )
         conn.commit()
         return jsonify({"success": True})
@@ -195,6 +203,57 @@ def delete_item():
         conn.execute(
             f"DELETE FROM {section} WHERE id = ? AND user_id = ?",
             (item_id, user_id)
+        )
+        conn.commit()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+    finally:
+        conn.close()
+
+@app.route("/rename-item", methods=["PUT"])
+def rename_item():
+    data = request.json
+    section = data.get("section", "")
+    item_id = data.get("id")
+    user_id = data.get("user_id")
+    new_name = (data.get("name") or "").strip()
+    allowed = ["Stories", "Characters", "Locations", "Objects"]
+    if section not in allowed:
+        return jsonify({"success": False, "error": "Invalid section"})
+    if not item_id or not user_id or not new_name:
+        return jsonify({"success": False, "error": "Missing data"})
+    conn = get_db()
+    try:
+        conn.execute(
+            f"UPDATE {section} SET name = ? WHERE id = ? AND user_id = ?",
+            (new_name, item_id, user_id)
+        )
+        conn.commit()
+        return jsonify({"success": True, "name": new_name})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+    finally:
+        conn.close()
+        
+
+@app.route("/update-object", methods=["PUT"])
+def update_object():
+    data = request.json
+    item_id     = data.get("id")
+    user_id     = data.get("user_id")
+    description = data.get("description", "")
+    obj_type    = data.get("obj_type", "")
+    element     = data.get("element", "")
+    rarity      = data.get("rarity", "")
+    status      = data.get("status", "")
+    if not item_id or not user_id:
+        return jsonify({"success": False, "error": "Missing data"})
+    conn = get_db()
+    try:
+        conn.execute(
+            "UPDATE Objects SET description = ?, obj_type = ?, element = ?, rarity = ?, status = ? WHERE id = ? AND user_id = ?",
+            (description, obj_type, element, rarity, status, item_id, user_id)
         )
         conn.commit()
         return jsonify({"success": True})

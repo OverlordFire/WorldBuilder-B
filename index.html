@@ -9,6 +9,8 @@
     <link href="Css/sections.css" rel="stylesheet"/>
     <link href="Css/frame.css" rel="stylesheet"/>
     <link href="Css/dashboard.css" rel="stylesheet"/>
+    <link href="Css/C-Character.css" rel="stylesheet"/>
+    <link href="Css/E-Object.css" rel="stylesheet"/>
   </head>
   <body>
     <header>
@@ -236,7 +238,21 @@
           <button id="modal-confirm" class="modal-btn-confirm">Create</button>
         </div>
       </div>
-
+    </div>
+    <!-- Modal: Renomear item -->
+    <div id="rename-modal" class="modal-overlay">
+      <div class="modal-box">
+        <h3 class="modal-title">Editar Name</h3>
+        <div class="modal-group">
+          <label>Name</label>
+          <input type="text" id="rename-input" placeholder="Digite o novo nome..." autocomplete="off">
+        </div>
+        <p id="rename-error" class="modal-error"></p>
+        <div class="modal-actions">
+          <button id="rename-cancel" class="modal-btn-cancel">Cancel</button>
+          <button id="rename-confirm" class="modal-btn-confirm">Confirm</button>
+        </div>
+      </div>
     </div>
       <!-- Modal: Login -->
     <div id="login-modal" class="modal-overlay open">
@@ -318,6 +334,8 @@
     
     <script src="Js/navbar_script.js"></script>
     <script src="Js/sections_script.js"></script>
+    <script src="Js/C-Charcter_script.js"></script>
+    <script src="Js/E-Object_script.js"></script>
     <script src="Js/auth_script.js"></script>
   </body>
 </html>
